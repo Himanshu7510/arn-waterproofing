@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Icon from '../Icon';
 
-export default function Header({ general, branding, socials, services, tel, showSocial }) {
+export default function Header({ general, branding, layout = {}, socials, services, tel, showSocial }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
@@ -17,17 +17,17 @@ export default function Header({ general, branding, socials, services, tel, show
   }, []);
 
   const nav = [
-    { href: '/', label: 'Home' },
-    { href: '/about', label: 'About Us' },
-    { href: '/services', label: 'Services', children: services },
-    { href: '/faq', label: 'FAQs' },
-    { href: '/contact', label: 'Contact' },
+    { href: '/', label: layout.navHome || 'Home' },
+    { href: '/about', label: layout.navAbout || 'About Us' },
+    { href: '/services', label: layout.navServices || 'Services', children: services },
+    { href: '/faq', label: layout.navFaq || 'FAQs' },
+    { href: '/contact', label: layout.navContact || 'Contact' },
   ];
   const isActive = (href) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
 
   return (
     <>
-      <div className="topbar">
+      {layout.showTopbar !== false && <div className="topbar">
         <div className="container topbar-inner">
           <div className="topbar-info">
             <a href={tel}><Icon name="phone" size={15} /> {general.phone}</a>
@@ -42,7 +42,7 @@ export default function Header({ general, branding, socials, services, tel, show
             </div>
           )}
         </div>
-      </div>
+      </div>}
       <header className={`header ${scrolled ? 'is-scrolled' : ''}`}>
         <div className="container header-inner">
           <Link href="/" className="logo" aria-label={general.siteName}>
@@ -53,8 +53,8 @@ export default function Header({ general, branding, socials, services, tel, show
               <span className="logo-text">
                 <span className="logo-mark"><Icon name="droplet" size={22} strokeWidth={2.2} /></span>
                 <span>
-                  <strong>ARN</strong> Waterproofing
-                  <small>&amp; Insulation Solution</small>
+                  <strong>{layout.logoLine1}</strong> {layout.logoLine2}
+                  <small>{layout.logoLine3}</small>
                 </span>
               </span>
             )}
@@ -72,7 +72,7 @@ export default function Header({ general, branding, socials, services, tel, show
                 )}
               </div>
             ))}
-            <a href={tel} className="btn btn-accent nav-cta"><Icon name="phone" size={18} /> Call Now</a>
+            <a href={tel} className="btn btn-accent nav-cta"><Icon name="phone" size={18} /> {layout.headerButton || 'Call Now'}</a>
           </nav>
           <button className="menu-btn" onClick={() => setOpen(!open)} aria-label="Toggle menu" aria-expanded={open}>
             <Icon name={open ? 'close' : 'menu'} size={26} />

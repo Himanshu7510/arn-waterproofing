@@ -46,12 +46,13 @@ export default async function RootLayout({ children }) {
   const b = settings.branding;
   const vars = `:root{--primary:${safeColor(b.primaryColor, '#0b5394')};--accent:${safeColor(b.accentColor, '#f28c18')};--dark:${safeColor(b.darkColor, '#0a2540')};}`;
   return (
-    <html lang="en-IN">
+    <html lang="en-IN" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
         <style dangerouslySetInnerHTML={{ __html: vars }} />
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
       </head>
       <body>{children}</body>
     </html>

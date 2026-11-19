@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 
 const GROUPS = [
   { title: 'Overview', links: [['/admin', 'Dashboard'], ['/admin/enquiries', 'Enquiries']] },
-  { title: 'Website Content', links: [['/admin/settings/home', 'Home Page'], ['/admin/collections/services', 'Services'], ['/admin/collections/features', 'Why Choose Us'], ['/admin/collections/process', 'Work Process'], ['/admin/collections/faqs', 'FAQs'], ['/admin/collections/testimonials', 'Testimonials'], ['/admin/settings/about', 'About Page'], ['/admin/settings/contact', 'Contact Page']] },
-  { title: 'Settings', links: [['/admin/settings/general', 'Business Info'], ['/admin/settings/branding', 'Logo & Favicon'], ['/admin/settings/seo', 'SEO'], ['/admin/settings/tracking', 'Analytics & Pixel'], ['/admin/settings/social', 'Social Media'], ['/admin/settings/email', 'Email Notifications'], ['/admin/admins', 'Admin Login']] },
+  { title: 'Website Content', links: [['/admin/settings/home', 'Home Page'], ['/admin/collections/services', 'Services'], ['/admin/settings/servicesPage', 'Services Page Text'], ['/admin/collections/features', 'Why Choose Us'], ['/admin/collections/process', 'Work Process'], ['/admin/collections/faqs', 'FAQs'], ['/admin/settings/faqPage', 'FAQ Page Text'], ['/admin/collections/testimonials', 'Testimonials'], ['/admin/settings/about', 'About Page'], ['/admin/settings/contact', 'Contact Page & Form']] },
+  { title: 'Settings', links: [['/admin/settings/general', 'Business Info'], ['/admin/settings/branding', 'Logo & Favicon'], ['/admin/settings/layout', 'Header & Footer'], ['/admin/settings/seo', 'SEO'], ['/admin/settings/tracking', 'Analytics & Pixel'], ['/admin/settings/social', 'Social Media'], ['/admin/settings/email', 'Email Notifications'], ['/admin/admins', 'Admin Login']] },
 ];
 
 export default function Sidebar({ admin, newCount }) {

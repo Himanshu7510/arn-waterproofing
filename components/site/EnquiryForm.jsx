@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { track } from './ClickTracker';
 
-export default function EnquiryForm({ services = [], heading, successMessage, defaultService = '', ads = {}, compact = false }) {
+export default function EnquiryForm({ services = [], heading, successMessage, defaultService = '', ads = {}, compact = false, buttonText, note }) {
   const pathname = usePathname();
   const [state, setState] = useState({ status: 'idle', error: '' });
 
@@ -78,9 +78,9 @@ export default function EnquiryForm({ services = [], heading, successMessage, de
       </div>
       {state.status === 'error' && <p className="form-error" role="alert">{state.error}</p>}
       <button type="submit" className="btn btn-accent btn-block" disabled={state.status === 'loading'}>
-        {state.status === 'loading' ? 'Sending…' : 'Get Free Site Inspection'}
+        {state.status === 'loading' ? 'Sending…' : buttonText || 'Get Free Site Inspection'}
       </button>
-      <p className="form-note">We respect your privacy. No spam.</p>
+      {note && <p className="form-note">{note}</p>}
     </form>
   );
 }

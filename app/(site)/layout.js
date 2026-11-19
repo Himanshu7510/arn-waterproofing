@@ -1,6 +1,7 @@
 import Header from '@/components/site/Header';
 import Footer from '@/components/site/Footer';
 import ClickTracker from '@/components/site/ClickTracker';
+import Reveal from '@/components/site/Reveal';
 import Icon from '@/components/Icon';
 import { TrackingHead, TrackingNoscript, CustomCode } from '@/components/site/Tracking';
 import { getSite, siteUrl, absUrl, telHref, waHref } from '@/lib/content';
@@ -12,7 +13,7 @@ const SOCIAL_KEYS = [
 
 export default async function SiteLayout({ children }) {
   const { settings, items } = await getSite();
-  const { general, branding, social, tracking, seo } = settings;
+  const { general, branding, social, tracking, seo, layout } = settings;
   const socials = SOCIAL_KEYS.filter(([k]) => social[k]).map(([k, label]) => ({ key: k === 'googleBusiness' ? 'google' : k, label, url: social[k] }));
   const services = items.services.map((s) => ({ title: s.title, slug: s.slug }));
   const tel = telHref(general.phone);
@@ -55,18 +56,19 @@ export default async function SiteLayout({ children }) {
       <CustomCode html={tracking.headScripts} id="head" />
       <TrackingNoscript tracking={tracking} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
-      <Header general={general} branding={branding} socials={socials} services={services} tel={tel} showSocial={social.showSocialInHeader} />
+      <Header general={general} branding={branding} layout={layout} socials={socials} services={services} tel={tel} showSocial={social.showSocialInHeader} />
       <main>{children}</main>
-      <Footer general={general} branding={branding} socials={socials} services={services} tel={tel} />
+      <Footer general={general} branding={branding} layout={layout} socials={socials} services={services} tel={tel} />
       <div className="floating">
         {social.showFloatingWhatsapp && (
-          <a href={wa} target="_blank" rel="noopener noreferrer" className="float-btn float-wa" aria-label="Chat on WhatsApp"><Icon name="whatsapp" size={28} /></a>
+          <a href={wa} target="_blank" rel="noopener noreferrer" className="float-btn float-wa" aria-label="Chat on WhatsApp"><Icon name="whatsapp" size={26} /><span className="float-label">WhatsApp</span></a>
         )}
         {social.showFloatingCall && (
-          <a href={tel} className="float-btn float-call" aria-label="Call now"><Icon name="phone" size={24} /></a>
+          <a href={tel} className="float-btn float-call" aria-label="Call now"><Icon name="phone" size={22} /><span className="float-label">{layout.headerButton || 'Call Now'}</span></a>
         )}
       </div>
       <ClickTracker />
+      <Reveal />
       <CustomCode html={tracking.bodyScripts} id="body" />
     </>
   );

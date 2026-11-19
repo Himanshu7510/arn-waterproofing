@@ -16,39 +16,46 @@ export async function generateMetadata() {
   };
 }
 
+const CARD_ICONS = ['home', 'building', 'factory', 'check', 'shield', 'award'];
+
 export default async function HomePage() {
   const { settings, items } = await getSite();
-  const { home, general, social, contact, tracking } = settings;
+  const { home, general, social, contact, tracking, servicesPage } = settings;
   const tel = telHref(general.phone);
   const wa = waHref(general.whatsapp || general.phone, social.whatsappMessage);
   const homeFaqs = items.faqs.filter((f) => f.showOnHome);
   const faqs = homeFaqs.length ? homeFaqs : items.faqs.slice(0, 5);
   const stats = [1, 2, 3, 4].map((n) => ({ v: home[`stat${n}Value`], l: home[`stat${n}Label`] })).filter((s) => s.v);
+  const points = [home.heroPoint1, home.heroPoint2, home.heroPoint3].filter(Boolean);
+  const cardItems = String(home.introCardItems || '').split(',').map((s) => s.trim()).filter(Boolean);
 
   return (
     <>
       <section className="hero" style={home.heroImage ? { '--hero-img': `url("${home.heroImage}")` } : undefined}>
         <div className="hero-bg" aria-hidden="true" />
+        <div className="hero-bubbles" aria-hidden="true"><span /><span /><span /><span /><span /></div>
         <div className="container hero-grid">
           <div className="hero-copy">
-            {home.heroBadge && <span className="badge">🛠️ {home.heroBadge}</span>}
-            <h1>{home.heroHeading}</h1>
-            <p className="lead">{home.heroSubheading}</p>
-            <div className="hero-actions">
-              <a href={tel} className="btn btn-accent btn-lg"><Icon name="phone" size={20} /> {home.heroPrimaryCta || `Call Now: ${general.phone}`}</a>
+            {home.heroBadge && <span className="badge anim-in" style={{ '--d': '0ms' }}>🛠️ {home.heroBadge}</span>}
+            <h1 className="anim-in" style={{ '--d': '80ms' }}>{home.heroHeading}</h1>
+            <p className="lead anim-in" style={{ '--d': '160ms' }}>{home.heroSubheading}</p>
+            <div className="hero-actions anim-in" style={{ '--d': '240ms' }}>
+              <a href={tel} className="btn btn-accent btn-lg btn-shine"><Icon name="phone" size={20} /> {home.heroPrimaryCta || `Call Now: ${general.phone}`}</a>
               <Link href="/contact" className="btn btn-white btn-lg">{home.heroSecondaryCta || 'Get Free Inspection'}</Link>
             </div>
-            <ul className="hero-points">
-              <li><Icon name="check" size={18} /> {general.experienceYears} Years Experience</li>
-              <li><Icon name="check" size={18} /> 100% Leakage Protection</li>
-              <li><Icon name="check" size={18} /> Free Site Inspection</li>
-            </ul>
+            {points.length > 0 && (
+              <ul className="hero-points anim-in" style={{ '--d': '320ms' }}>
+                {points.map((p) => <li key={p}><Icon name="check" size={18} /> {p}</li>)}
+              </ul>
+            )}
           </div>
-          <div className="hero-form">
+          <div className="hero-form anim-in" style={{ '--d': '200ms' }}>
             <EnquiryForm
               compact
               heading={contact.formHeading}
               successMessage={contact.successMessage}
+              buttonText={contact.formButton}
+              note={contact.formNote}
               services={items.services.map((s) => s.title)}
               ads={{ id: tracking.googleAdsId, label: tracking.googleAdsLabel }}
             />
@@ -58,7 +65,7 @@ export default async function HomePage() {
 
       {stats.length > 0 && (
         <section className="stats">
-          <div className="container stats-grid">
+          <div className="container stats-grid" data-reveal>
             {stats.map((s, i) => (
               <div key={i} className="stat"><strong>{s.v}</strong><span>{s.l}</span></div>
             ))}
@@ -68,27 +75,27 @@ export default async function HomePage() {
 
       <section className="section">
         <div className={`container intro ${home.introImage ? 'has-img' : ''}`}>
-          <div>
-            <span className="eyebrow">About Us</span>
+          <div data-reveal>
+            {home.introEyebrow && <span className="eyebrow">{home.introEyebrow}</span>}
             <h2>{home.introHeading}</h2>
             <Rich text={home.introText} />
             <div className="intro-actions">
-              <a href={tel} className="btn btn-primary"><Icon name="phone" size={18} /> Call Now: {general.phone}</a>
-              <Link href="/about" className="btn btn-outline">More About Us</Link>
+              {home.introButton1 && <a href={tel} className="btn btn-primary"><Icon name="phone" size={18} /> {home.introButton1}</a>}
+              {home.introButton2 && <Link href="/about" className="btn btn-outline">{home.introButton2}</Link>}
             </div>
           </div>
           {home.introImage ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={home.introImage} alt={home.introHeading} className="intro-img" loading="lazy" />
+            <img src={home.introImage} alt={home.introHeading} className="intro-img" loading="lazy" data-reveal="right" />
           ) : (
-            <div className="intro-card">
-              <div className="intro-card-big">{general.experienceYears}</div>
-              <div className="intro-card-label">Years of Trusted Service</div>
-              <ul>
-                <li><Icon name="home" size={20} /> Residential</li>
-                <li><Icon name="building" size={20} /> Commercial</li>
-                <li><Icon name="factory" size={20} /> Industrial</li>
-              </ul>
+            <div className="intro-card" data-reveal="right">
+              {home.introCardValue && <div className="intro-card-big">{home.introCardValue}</div>}
+              {home.introCardLabel && <div className="intro-card-label">{home.introCardLabel}</div>}
+              {cardItems.length > 0 && (
+                <ul>
+                  {cardItems.map((c, i) => <li key={c}><Icon name={CARD_ICONS[i % CARD_ICONS.length]} size={20} /> {c}</li>)}
+                </ul>
+              )}
             </div>
           )}
         </div>
@@ -96,14 +103,14 @@ export default async function HomePage() {
 
       <section className="section alt" id="services">
         <div className="container">
-          <SectionHead eyebrow="What We Do" title={home.servicesHeading} subtitle={home.servicesSubheading} />
-          <ServiceGrid services={items.services} />
+          <SectionHead eyebrow={home.servicesEyebrow} title={home.servicesHeading} subtitle={home.servicesSubheading} />
+          <ServiceGrid services={items.services} linkText={servicesPage.cardLink} />
         </div>
       </section>
 
       <section className="section">
         <div className="container">
-          <SectionHead eyebrow="Why ARN" title={home.whyHeading} subtitle={home.whySubheading} />
+          <SectionHead eyebrow={home.whyEyebrow} title={home.whyHeading} subtitle={home.whySubheading} />
           <FeatureGrid features={items.features} />
         </div>
       </section>
@@ -111,10 +118,10 @@ export default async function HomePage() {
       {items.process.length > 0 && (
         <section className="section alt">
           <div className="container">
-            <SectionHead eyebrow="Our Process" title={home.processHeading} />
+            <SectionHead eyebrow={home.processEyebrow} title={home.processHeading} />
             <ol className="process">
               {items.process.map((p, i) => (
-                <li key={p.id}><span className="step">{i + 1}</span><h3>{p.title}</h3><p>{p.description}</p></li>
+                <li key={p.id} data-reveal style={{ '--d': `${i * 100}ms` }}><span className="step">{i + 1}</span><h3>{p.title}</h3><p>{p.description}</p></li>
               ))}
             </ol>
           </div>
@@ -124,23 +131,23 @@ export default async function HomePage() {
       {items.testimonials.length > 0 && (
         <section className="section">
           <div className="container">
-            <SectionHead eyebrow="Reviews" title={home.testimonialsHeading} />
+            <SectionHead eyebrow={home.testimonialsEyebrow} title={home.testimonialsHeading} />
             <Testimonials items={items.testimonials} />
           </div>
         </section>
       )}
 
       {faqs.length > 0 && (
-        <section className="section alt">
+        <section className={`section ${items.testimonials.length ? 'alt' : ''}`}>
           <div className="container narrow">
-            <SectionHead eyebrow="FAQs" title={home.faqHeading} />
+            <SectionHead eyebrow={home.faqEyebrow} title={home.faqHeading} />
             <FaqList faqs={faqs} />
-            <p className="center mt"><Link href="/faq" className="btn btn-outline">View All FAQs</Link></p>
+            {home.faqButton && <p className="center mt"><Link href="/faq" className="btn btn-outline">{home.faqButton}</Link></p>}
           </div>
         </section>
       )}
 
-      <CtaBanner heading={home.ctaHeading} text={home.ctaText} tel={tel} phone={general.phone} wa={wa} />
+      <CtaBanner heading={home.ctaHeading} text={home.ctaText} tel={tel} phone={general.phone} wa={wa} callText={home.ctaCallText} waText={home.ctaWhatsappText} />
     </>
   );
 }

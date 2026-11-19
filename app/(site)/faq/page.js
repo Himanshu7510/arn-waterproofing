@@ -14,19 +14,19 @@ export async function generateMetadata() {
 
 export default async function FaqPage() {
   const { settings, items } = await getSite();
-  const { home, general, social } = settings;
+  const { home, general, social, faqPage, layout } = settings;
   const base = siteUrl(settings);
   return (
     <>
-      <PageHero title={home.faqHeading || 'Frequently Asked Questions'} subtitle="Everything you need to know about our waterproofing and insulation services." crumbs={[{ label: 'FAQs' }]} />
+      <PageHero title={faqPage.heading} subtitle={faqPage.subheading} crumbs={[{ label: layout.navFaq }]} />
       <section className="section">
         <div className="container narrow">
           {items.faqs.length ? <FaqList faqs={items.faqs} /> : <p className="center">No FAQs yet.</p>}
         </div>
       </section>
-      <CtaBanner heading="Still have questions?" text={`Call us on ${general.phone} – we are happy to help.`} tel={telHref(general.phone)} phone={general.phone} wa={waHref(general.whatsapp || general.phone, social.whatsappMessage)} />
+      <CtaBanner heading={faqPage.ctaHeading} text={String(faqPage.ctaText || '').replace(/\{phone\}/g, general.phone)} tel={telHref(general.phone)} phone={general.phone} wa={waHref(general.whatsapp || general.phone, social.whatsappMessage)} callText={home.ctaCallText} waText={home.ctaWhatsappText} />
       {items.faqs.length > 0 && <JsonLd data={faqSchema(items.faqs)} />}
-      <JsonLd data={breadcrumbSchema(base, [{ name: 'Home', path: '/' }, { name: 'FAQs', path: '/faq' }])} />
+      <JsonLd data={breadcrumbSchema(base, [{ name: 'Home', path: '/' }, { name: layout.navFaq, path: '/faq' }])} />
     </>
   );
 }
