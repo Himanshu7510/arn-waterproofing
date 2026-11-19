@@ -7,14 +7,25 @@ export async function generateMetadata() {
   const { settings } = await getSite();
   const { seo, branding, general } = settings;
   const base = siteUrl(settings);
-  const favicon = branding.favicon || '/favicon.svg';
+  const isDefaultIcon = !branding.favicon || branding.favicon === '/brand/favicon-512.png';
+  const icons = isDefaultIcon
+    ? {
+        icon: [
+          { url: '/favicon.ico', sizes: 'any' },
+          { url: '/brand/favicon-32.png', sizes: '32x32', type: 'image/png' },
+          { url: '/brand/favicon-192.png', sizes: '192x192', type: 'image/png' },
+          { url: '/brand/favicon-512.png', sizes: '512x512', type: 'image/png' },
+        ],
+        apple: [{ url: '/brand/apple-touch-icon.png', sizes: '180x180' }],
+      }
+    : { icon: [{ url: branding.favicon }], shortcut: [{ url: branding.favicon }], apple: [{ url: branding.favicon }] };
   return {
     metadataBase: new URL(base),
     title: { default: seo.defaultTitle || general.siteName, template: seo.titleTemplate || `%s | ${general.siteName}` },
     description: seo.defaultDescription,
     keywords: seo.keywords ? seo.keywords.split(',').map((k) => k.trim()).filter(Boolean) : undefined,
     applicationName: general.siteName,
-    icons: { icon: [{ url: favicon }], shortcut: [{ url: favicon }], apple: [{ url: favicon }] },
+    icons,
     robots: seo.allowIndexing
       ? { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } }
       : { index: false, follow: false },

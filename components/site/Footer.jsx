@@ -10,8 +10,10 @@ export default function Footer({ general, branding, layout = {}, socials, servic
         <div>
           <div className="footer-logo">
             {branding.logo ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={branding.logo} alt={general.siteName} style={{ height: 52 }} />
+              <span className="footer-logo-card">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={branding.logo} alt={general.siteName} loading="lazy" />
+              </span>
             ) : (
               <span className="logo-text light">
                 <span className="logo-mark"><Icon name="droplet" size={22} strokeWidth={2.2} /></span>

@@ -26,7 +26,7 @@ export default function Sidebar({ admin, newCount }) {
       </div>
       <aside className={`a-sidebar ${open ? 'open' : ''}`}>
         <div className="a-brand">
-          <span className="a-brand-mark">💧</span>
+          <img src="/brand/arn-icon.webp" alt="" className="a-brand-img" width="40" height="40" />
           <div><strong>ARN Admin</strong><small>{admin.email}</small></div>
         </div>
         <nav>

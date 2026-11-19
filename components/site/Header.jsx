@@ -46,12 +46,17 @@ export default function Header({ general, branding, layout = {}, socials, servic
       <header className={`header ${scrolled ? 'is-scrolled' : ''}`}>
         <div className="container header-inner">
           <Link href="/" className="logo" aria-label={general.siteName}>
-            {branding.logo ? (
+            {branding.headerLogoMode === 'Full Logo Image' && branding.logo ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={branding.logo} alt={general.siteName} style={{ height: Number(branding.logoHeight) || 48 }} />
+              <img src={branding.logo} alt={general.siteName} className="logo-full" style={{ height: Number(branding.logoHeight) || 56 }} />
             ) : (
               <span className="logo-text">
-                <span className="logo-mark"><Icon name="droplet" size={22} strokeWidth={2.2} /></span>
+                {branding.logoMark ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={branding.logoMark} alt="" className="logo-icon" width="56" height="56" style={{ height: Number(branding.logoHeight) || 56, width: Number(branding.logoHeight) || 56 }} />
+                ) : (
+                  <span className="logo-mark"><Icon name="droplet" size={22} strokeWidth={2.2} /></span>
+                )}
                 <span>
                   <strong>{layout.logoLine1}</strong> {layout.logoLine2}
                   <small>{layout.logoLine3}</small>

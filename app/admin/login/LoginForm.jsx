@@ -19,7 +19,7 @@ export default function LoginForm() {
   return (
     <div className="a-login">
       <form className="a-login-card" onSubmit={submit}>
-        <div className="a-brand center"><span className="a-brand-mark">💧</span><div><strong>ARN Admin Panel</strong><small>Sign in to manage your website</small></div></div>
+        <div className="a-brand center"><img src="/brand/arn-icon.webp" alt="" className="a-brand-img" width="40" height="40" /><div><strong>ARN Admin Panel</strong><small>Sign in to manage your website</small></div></div>
         <div className="a-field"><label htmlFor="email">Email</label><input id="email" name="email" type="email" required autoComplete="username" className="a-input" /></div>
         <div className="a-field"><label htmlFor="password">Password</label><input id="password" name="password" type="password" required autoComplete="current-password" className="a-input" /></div>
         {err && <p className="a-error">{err}</p>}

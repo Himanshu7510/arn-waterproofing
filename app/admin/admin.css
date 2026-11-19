@@ -148,3 +148,4 @@ textarea.a-input{resize:vertical}
 .a-login-card .a-brand{border:0;padding:0 0 6px}
 .a-login-card .a-brand strong{color:#111827;font-size:18px}
 .a-login-card .a-brand small{color:var(--a-muted)}
+.a-brand-img{width:40px;height:40px;object-fit:contain;flex-shrink:0;background:#fff;border-radius:50%}

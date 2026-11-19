@@ -384,3 +384,14 @@ p{margin:0 0 1em}
   body{padding-bottom:54px}
   .footer{padding-bottom:0}
 }
+
+/* Brand logo */
+.logo-icon{display:block;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 3px 6px rgba(10,37,64,.15));transition:transform .3s}
+.logo:hover .logo-icon{transform:rotate(-6deg) scale(1.04)}
+.logo-text strong{color:#14306e}
+.logo-text small{color:#3f8f1c;font-weight:600}
+.logo-full{width:auto;object-fit:contain}
+.footer-logo-card{display:inline-flex;background:#fff;border-radius:18px;padding:10px 14px;box-shadow:0 10px 24px -12px rgba(0,0,0,.5)}
+.footer-logo-card img{height:130px;width:auto}
+@media(max-width:960px){.logo-icon{height:46px!important;width:46px!important}.logo-full{height:46px!important}}
+@media(max-width:380px){.logo-text{font-size:15.5px}.logo-text small{font-size:10.5px}}
