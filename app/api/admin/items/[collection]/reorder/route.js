@@ -9,7 +9,7 @@ export const POST = adminRoute(async (req, { params }) => {
   const sql = await db();
   await sql.begin(async (tx) => {
     for (let i = 0; i < ids.length; i++) {
-      await tx`UPDATE items SET sort_order = ${i} WHERE id = ${Number(ids[i])} AND collection = ${collection}`;
+      await tx`UPDATE arn.items SET sort_order = ${i} WHERE id = ${Number(ids[i])} AND collection = ${collection}`;
     }
   });
   refreshSite();

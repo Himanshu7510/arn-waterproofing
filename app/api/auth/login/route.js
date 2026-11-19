@@ -15,7 +15,7 @@ export async function POST(req) {
 
     const { email, password } = await req.json().catch(() => ({}));
     const sql = await db();
-    const [admin] = await sql`SELECT id, email, password_hash FROM admins WHERE email = ${String(email || '').trim().toLowerCase()}`;
+    const [admin] = await sql`SELECT id, email, password_hash FROM arn.admins WHERE email = ${String(email || '').trim().toLowerCase()}`;
     const ok = admin && (await bcrypt.compare(String(password || ''), admin.password_hash));
     if (!ok) {
       list.push(now);
@@ -23,7 +23,7 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Invalid email or password.' }, { status: 401 });
     }
     attempts.delete(ip);
-    await sql`UPDATE admins SET last_login = now() WHERE id = ${admin.id}`;
+    await sql`UPDATE arn.admins SET last_login = now() WHERE id = ${admin.id}`;
     const token = await createToken({ sub: String(admin.id), pv: passwordVersion(admin.password_hash) });
     const res = NextResponse.json({ ok: true });
     res.cookies.set(SESSION_COOKIE, token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/', maxAge: 60 * 60 * 24 * 7 });

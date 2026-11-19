@@ -35,7 +35,7 @@ export async function POST(req) {
     if (enq.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(enq.email)) return NextResponse.json({ error: 'Please enter a valid email.' }, { status: 400 });
 
     const sql = await db();
-    const [row] = await sql`INSERT INTO enquiries (name, phone, email, service, location, message, page)
+    const [row] = await sql`INSERT INTO arn.enquiries (name, phone, email, service, location, message, page)
       VALUES (${enq.name}, ${enq.phone}, ${enq.email || null}, ${enq.service || null}, ${enq.location || null}, ${enq.message || null}, ${enq.page || null})
       RETURNING id`;
 
@@ -43,7 +43,7 @@ export async function POST(req) {
       let status;
       try { status = await sendEnquiryEmails(enq); }
       catch (e) { console.error('Enquiry email failed:', e.message); status = 'failed: ' + e.message.slice(0, 200); }
-      await sql`UPDATE enquiries SET email_status = ${status} WHERE id = ${row.id}`.catch(() => {});
+      await sql`UPDATE arn.enquiries SET email_status = ${status} WHERE id = ${row.id}`.catch(() => {});
     });
     return NextResponse.json({ ok: true });
   } catch (e) {

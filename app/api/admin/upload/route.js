@@ -20,7 +20,7 @@ export const POST = adminRoute(async (req) => {
   }
   const buf = Buffer.from(await file.arrayBuffer());
   const sql = await db();
-  const [row] = await sql`INSERT INTO media (filename, mime, size, data) VALUES (${safeName}, ${file.type}, ${file.size}, ${buf}) RETURNING id`;
+  const [row] = await sql`INSERT INTO arn.media (filename, mime, size, data) VALUES (${safeName}, ${file.type}, ${file.size}, ${buf}) RETURNING id`;
   const ext = safeName.includes('.') ? safeName.split('.').pop() : 'img';
   return NextResponse.json({ url: `/api/media/${row.id}.${ext}` });
 });

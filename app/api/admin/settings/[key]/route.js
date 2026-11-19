@@ -5,7 +5,7 @@ import { SETTINGS, pickFields } from '@/lib/schema';
 import { DEFAULT_SETTINGS } from '@/lib/defaults';
 
 async function current(sql, key) {
-  const [row] = await sql`SELECT value FROM settings WHERE key = ${key}`;
+  const [row] = await sql`SELECT value FROM arn.settings WHERE key = ${key}`;
   return { ...DEFAULT_SETTINGS[key], ...(row?.value || {}) };
 }
 
@@ -40,7 +40,7 @@ export const PUT = adminRoute(async (req, { params }) => {
   }
   if (key === 'seo' && incoming.siteUrl) incoming.siteUrl = incoming.siteUrl.replace(/\/+$/, '');
   const value = { ...existing, ...incoming };
-  await sql`INSERT INTO settings (key, value, updated_at) VALUES (${key}, ${sql.json(value)}, now())
+  await sql`INSERT INTO arn.settings (key, value, updated_at) VALUES (${key}, ${sql.json(value)}, now())
     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()`;
   refreshSite();
   return NextResponse.json({ ok: true, value: mask(key, value) });

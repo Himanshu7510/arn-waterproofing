@@ -8,7 +8,7 @@ export default async function PanelLayout({ children }) {
   const admin = await getSession();
   if (!admin) redirect('/admin/login');
   const sql = await db();
-  const [{ n }] = await sql`SELECT count(*)::int AS n FROM enquiries WHERE status = 'new'`;
+  const [{ n }] = await sql`SELECT count(*)::int AS n FROM arn.enquiries WHERE status = 'new'`;
   return (
     <ToastProvider>
       <div className="a-shell">

@@ -5,7 +5,7 @@ export async function GET(req, { params }) {
   const num = parseInt(String(id), 10);
   if (!num) return new Response('Not found', { status: 404 });
   const sql = await db();
-  const [m] = await sql`SELECT mime, data FROM media WHERE id = ${num}`;
+  const [m] = await sql`SELECT mime, data FROM arn.media WHERE id = ${num}`;
   if (!m) return new Response('Not found', { status: 404 });
   return new Response(m.data, {
     headers: {

@@ -8,7 +8,7 @@ export const GET = adminRoute(async (req, { params }) => {
   const { collection } = await params;
   if (!COLLECTIONS[collection]) return NextResponse.json({ error: 'Unknown collection' }, { status: 404 });
   const sql = await db();
-  const rows = await sql`SELECT id, data, sort_order, published FROM items WHERE collection = ${collection} ORDER BY sort_order, id`;
+  const rows = await sql`SELECT id, data, sort_order, published FROM arn.items WHERE collection = ${collection} ORDER BY sort_order, id`;
   return NextResponse.json({ items: rows.map((r) => ({ id: r.id, published: r.published, ...r.data })) });
 });
 
@@ -19,8 +19,8 @@ export const POST = adminRoute(async (req, { params }) => {
   try { data = validateItem(collection, body); } catch (e) { return NextResponse.json({ error: e.message }, { status: e.status || 400 }); }
   const sql = await db();
   if (collection === 'services') data.slug = await uniqueSlug(sql, collection, data.slug || data.title);
-  const [{ max }] = await sql`SELECT coalesce(max(sort_order), -1)::int AS max FROM items WHERE collection = ${collection}`;
-  const [row] = await sql`INSERT INTO items (collection, data, sort_order, published)
+  const [{ max }] = await sql`SELECT coalesce(max(sort_order), -1)::int AS max FROM arn.items WHERE collection = ${collection}`;
+  const [row] = await sql`INSERT INTO arn.items (collection, data, sort_order, published)
     VALUES (${collection}, ${sql.json(data)}, ${max + 1}, ${body.published !== false}) RETURNING id`;
   refreshSite();
   return NextResponse.json({ ok: true, id: row.id });

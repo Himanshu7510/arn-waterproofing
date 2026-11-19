@@ -11,12 +11,12 @@ export default async function Dashboard() {
     count(*) FILTER (WHERE status = 'new')::int AS fresh,
     count(*) FILTER (WHERE created_at > now() - interval '7 days')::int AS week,
     count(*) FILTER (WHERE created_at > now() - interval '30 days')::int AS month
-    FROM enquiries`;
-  const recent = await sql`SELECT id, name, phone, service, status, created_at FROM enquiries ORDER BY created_at DESC LIMIT 6`;
-  const counts = await sql`SELECT collection, count(*)::int AS n FROM items GROUP BY collection`;
+    FROM arn.enquiries`;
+  const recent = await sql`SELECT id, name, phone, service, status, created_at FROM arn.enquiries ORDER BY created_at DESC LIMIT 6`;
+  const counts = await sql`SELECT collection, count(*)::int AS n FROM arn.items GROUP BY collection`;
   const c = Object.fromEntries(counts.map((r) => [r.collection, r.n]));
   const { settings } = await getSite();
-  const raw = await sql`SELECT key, value FROM settings WHERE key IN ('email','tracking','seo','branding')`;
+  const raw = await sql`SELECT key, value FROM arn.settings WHERE key IN ('email','tracking','seo','branding')`;
   const s = Object.fromEntries(raw.map((r) => [r.key, r.value]));
   const checks = [
     { ok: Boolean(s.seo?.siteUrl), label: 'Website URL set in SEO settings', href: '/admin/settings/seo' },
