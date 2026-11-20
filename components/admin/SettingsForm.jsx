@@ -39,7 +39,16 @@ export default function SettingsForm({ sectionKey }) {
   async function testEmail() {
     if (dirty) { toast('Save your changes first, then send a test email.', 'error'); return; }
     setTesting(true);
-    try { const r = await api('/api/admin/email-test', { method: 'POST' }); toast(r.message); }
+    try {
+      const r = await api('/api/admin/email-test', { method: 'POST' });
+      if (r.relayResult) {
+        const res = await r.relayResult;
+        const bad = res.filter((x) => !x.ok && !/activat/i.test(x.message));
+        if (bad.length) toast('Relay error: ' + bad.map((x) => `${x.to}: ${x.message}`).join('; '), 'error');
+        else if (res.some((x) => /activat/i.test(x.message))) toast('Activation needed: open the "Activate" email from FormSubmit (check Spam) and click it, then send the test again.');
+        else toast('Test email sent to ' + res.map((x) => x.to).join(', '));
+      } else toast(r.message);
+    }
     catch (err) { toast(err.message, 'error'); } finally { setTesting(false); }
   }
 

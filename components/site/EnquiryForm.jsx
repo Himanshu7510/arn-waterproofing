@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { track } from './ClickTracker';
+import { sendRelay } from '@/lib/relay-client';
 
 export default function EnquiryForm({ services = [], heading, successMessage, defaultService = '', ads = {}, compact = false, buttonText, note }) {
   const pathname = usePathname();
@@ -21,6 +22,7 @@ export default function EnquiryForm({ services = [], heading, successMessage, de
       const res = await fetch('/api/enquiry', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error || 'Something went wrong. Please call us directly.');
+      if (json.relay) sendRelay(json.relay);
       form.reset();
       setState({ status: 'success', error: '' });
       track('generate_lead', { form_name: 'enquiry', service: data.service || '' });

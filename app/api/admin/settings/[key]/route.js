@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { after } from 'next/server';
-import { sendAdminAlert } from '@/lib/mail';
+import { adminAlert } from '@/lib/mail';
 import { adminRoute, refreshSite } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { SETTINGS, pickFields } from '@/lib/schema';
@@ -45,6 +44,6 @@ export const PUT = adminRoute(async (req, { params }, admin) => {
   await sql`INSERT INTO arn.settings (key, value, updated_at) VALUES (${key}, ${sql.json(value)}, now())
     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()`;
   refreshSite();
-  after(() => sendAdminAlert('update', admin, { Section: def.label, Action: 'Settings saved' }));
-  return NextResponse.json({ ok: true, value: mask(key, value) });
+  const relay = await adminAlert('update', admin, { Section: def.label, Action: 'Settings saved' });
+  return NextResponse.json({ ok: true, relay, value: mask(key, value) });
 });

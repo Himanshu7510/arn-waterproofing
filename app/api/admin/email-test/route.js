@@ -4,9 +4,14 @@ import { sendTestEmail } from '@/lib/mail';
 
 export const POST = adminRoute(async () => {
   try {
-    const status = await sendTestEmail();
-    const pending = /activation-pending/.test(status);
-    return NextResponse.json({ ok: true, message: pending ? `Almost done: open the "Activate" email from FormSubmit in your inbox (check Spam), click Activate, then send the test again. (${status})` : `Test email: ${status}` });
+    const r = await sendTestEmail();
+    return NextResponse.json({
+      ok: true,
+      relay: r.relay || null,
+      message: r.relay
+        ? `Test sent to ${r.relay.to.join(', ')}. First time? Open the "Activate" email from FormSubmit (check Spam), click Activate, then send the test again.`
+        : `Test email: ${r.status}`,
+    });
   } catch (e) {
     return NextResponse.json({ error: 'Email failed: ' + e.message }, { status: 400 });
   }

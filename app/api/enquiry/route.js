@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { after } from 'next/server';
 import { db } from '@/lib/db';
-import { sendEnquiryEmails } from '@/lib/mail';
+import { sendEnquiryEmails, enquiryNeedsServerSend } from '@/lib/mail';
 
 const hits = new Map();
 function rateLimited(ip) {
@@ -39,13 +39,22 @@ export async function POST(req) {
       VALUES (${enq.name}, ${enq.phone}, ${enq.email || null}, ${enq.service || null}, ${enq.location || null}, ${enq.message || null}, ${enq.page || null})
       RETURNING id`;
 
-    after(async () => {
-      let status;
-      try { status = await sendEnquiryEmails(enq); console.log('[mail] enquiry', row.id, status); }
-      catch (e) { console.error('Enquiry email failed:', e.message); status = 'failed: ' + e.message.slice(0, 200); }
-      await sql`UPDATE arn.enquiries SET email_status = ${status} WHERE id = ${row.id}`.catch(() => {});
-    });
-    return NextResponse.json({ ok: true });
+    if (await enquiryNeedsServerSend()) {
+      // Own SMTP configured: send from the server after responding
+      after(async () => {
+        let status;
+        try { status = (await sendEnquiryEmails(enq)).status; console.log('[mail] enquiry', row.id, status); }
+        catch (e) { console.error('Enquiry email failed:', e.message); status = 'failed: ' + e.message.slice(0, 200); }
+        await sql`UPDATE arn.enquiries SET email_status = ${status} WHERE id = ${row.id}`.catch(() => {});
+      });
+      return NextResponse.json({ ok: true });
+    }
+    // No SMTP: the visitor's browser sends the notification through the relay
+    let relay = null, status;
+    try { const r = await sendEnquiryEmails(enq); relay = r.relay || null; status = r.status; }
+    catch (e) { status = 'failed: ' + e.message.slice(0, 200); }
+    await sql`UPDATE arn.enquiries SET email_status = ${status || 'disabled'} WHERE id = ${row.id}`.catch(() => {});
+    return NextResponse.json({ ok: true, relay });
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: 'Could not submit right now. Please call us directly.' }, { status: 500 });

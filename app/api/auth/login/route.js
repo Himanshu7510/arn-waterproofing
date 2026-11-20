@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { after } from 'next/server';
-import { sendAdminAlert } from '@/lib/mail';
+import { adminAlert } from '@/lib/mail';
 import bcrypt from 'bcryptjs';
 import { db } from '@/lib/db';
 import { createToken, SESSION_COOKIE } from '@/lib/session';
@@ -28,8 +27,8 @@ export async function POST(req) {
     await sql`UPDATE arn.admins SET last_login = now() WHERE id = ${admin.id}`;
     const token = await createToken({ sub: String(admin.id), pv: passwordVersion(admin.password_hash) });
     const ua = (req.headers.get('user-agent') || '').slice(0, 160);
-    after(() => sendAdminAlert('login', admin, { 'IP address': ip, Device: ua }));
-    const res = NextResponse.json({ ok: true });
+    const relay = await adminAlert('login', admin, { 'IP address': ip, Device: ua });
+    const res = NextResponse.json({ ok: true, relay });
     res.cookies.set(SESSION_COOKIE, token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/', maxAge: 60 * 60 * 24 * 7 });
     return res;
   } catch (e) {

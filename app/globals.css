@@ -57,7 +57,9 @@ p{margin:0 0 1em}
   .nav{position:absolute;top:100%;left:0;right:0;background:#fff;flex-direction:column;align-items:stretch;padding:8px 20px 22px;box-shadow:0 20px 30px -20px rgba(0,0,0,.35);border-top:1px solid var(--line);max-height:calc(100vh - 76px);max-height:calc(100dvh - 76px);overflow:auto;transform:translateY(-10px);opacity:0;visibility:hidden;transition:opacity .22s,transform .22s,visibility .22s}
   .nav.is-open{transform:none;opacity:1;visibility:visible}
   .nav-item>a{padding:12px 6px;border-bottom:1px solid var(--line);border-radius:0}
-  .dropdown{position:static;opacity:1;visibility:visible;transform:none;box-shadow:none;border:0;padding:0 0 0 12px;min-width:0}
+  .dropdown{position:static;opacity:1;visibility:inherit;transform:none;box-shadow:none;border:0;padding:0 0 0 12px;min-width:0}
+  .nav:not(.is-open){pointer-events:none}
+  .nav:not(.is-open) *{visibility:hidden}
   .nav-cta{margin:14px 0 0}
 }
 
@@ -395,3 +397,9 @@ p{margin:0 0 1em}
 .footer-logo-card img{height:130px;width:auto}
 @media(max-width:960px){.logo-icon{height:46px!important;width:46px!important}.logo-full{height:46px!important}}
 @media(max-width:380px){.logo-text{font-size:15.5px}.logo-text small{font-size:10.5px}}
+/* Keep form controls clear of the phone action bar; hide the bar while typing */
+@media(max-width:640px){
+  html{scroll-padding-bottom:72px}
+  body.is-typing .floating{transform:translateY(110%)}
+  .floating{transition:transform .2s}
+}

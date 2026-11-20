@@ -33,8 +33,17 @@ export default function ClickTracker() {
         track('click_email', { link_url: href });
       }
     };
+    const isField = (el) => el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName);
+    const onFocusIn = (e) => { if (isField(e.target)) document.body.classList.add('is-typing'); };
+    const onFocusOut = () => setTimeout(() => { if (!isField(document.activeElement)) document.body.classList.remove('is-typing'); }, 50);
     document.addEventListener('click', onClick);
-    return () => document.removeEventListener('click', onClick);
+    document.addEventListener('focusin', onFocusIn);
+    document.addEventListener('focusout', onFocusOut);
+    return () => {
+      document.removeEventListener('click', onClick);
+      document.removeEventListener('focusin', onFocusIn);
+      document.removeEventListener('focusout', onFocusOut);
+    };
   }, []);
   return null;
 }

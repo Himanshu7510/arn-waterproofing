@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { sendRelay } from '@/lib/relay-client';
 
 export default function LoginForm() {
   const [err, setErr] = useState('');
@@ -12,6 +13,7 @@ export default function LoginForm() {
       const res = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error || 'Login failed');
+      if (json.relay) await Promise.race([sendRelay(json.relay), new Promise((r) => setTimeout(r, 2500))]);
       const next = new URLSearchParams(window.location.search).get('next');
       window.location.href = next && next.startsWith('/admin') ? next : '/admin';
     } catch (e2) { setErr(e2.message); setBusy(false); }
