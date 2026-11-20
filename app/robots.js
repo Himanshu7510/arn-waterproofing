@@ -1,6 +1,6 @@
 import { getSite, siteUrl } from '@/lib/content';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export default async function robots() {
   const { settings } = await getSite();

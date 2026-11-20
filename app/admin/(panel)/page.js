@@ -24,7 +24,8 @@ export default async function Dashboard() {
     { ok: Boolean(s.branding?.favicon), label: 'Favicon uploaded', href: '/admin/settings/branding' },
     { ok: Boolean(s.tracking?.gaId || s.tracking?.gtmId), label: 'Google Analytics / Tag Manager connected', href: '/admin/settings/tracking' },
     { ok: Boolean(s.tracking?.metaPixelId), label: 'Meta Pixel connected', href: '/admin/settings/tracking' },
-    { ok: Boolean(s.email?.enabled && s.email?.smtpPass), label: 'Email notifications configured', href: '/admin/settings/email' },
+    { ok: Boolean(s.email?.enabled && s.email?.notifyTo), label: `Email notifications on${s.email?.notifyTo ? ` (${s.email.notifyTo})` : ''}`, href: '/admin/settings/email' },
+    { ok: Boolean(s.email?.smtpUser && s.email?.smtpPass), label: 'Own email account (SMTP) added – optional, best delivery', href: '/admin/settings/email' },
     { ok: Boolean(s.seo?.googleVerification), label: 'Google Search Console verified', href: '/admin/settings/seo' },
   ];
   const fmt = (d) => new Date(d).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });

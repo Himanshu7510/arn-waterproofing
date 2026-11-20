@@ -41,7 +41,7 @@ export async function POST(req) {
 
     after(async () => {
       let status;
-      try { status = await sendEnquiryEmails(enq); }
+      try { status = await sendEnquiryEmails(enq); console.log('[mail] enquiry', row.id, status); }
       catch (e) { console.error('Enquiry email failed:', e.message); status = 'failed: ' + e.message.slice(0, 200); }
       await sql`UPDATE arn.enquiries SET email_status = ${status} WHERE id = ${row.id}`.catch(() => {});
     });

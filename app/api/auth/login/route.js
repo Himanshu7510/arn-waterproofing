@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { after } from 'next/server';
+import { sendAdminAlert } from '@/lib/mail';
 import bcrypt from 'bcryptjs';
 import { db } from '@/lib/db';
 import { createToken, SESSION_COOKIE } from '@/lib/session';
@@ -15,7 +17,7 @@ export async function POST(req) {
 
     const { email, password } = await req.json().catch(() => ({}));
     const sql = await db();
-    const [admin] = await sql`SELECT id, email, password_hash FROM arn.admins WHERE email = ${String(email || '').trim().toLowerCase()}`;
+    const [admin] = await sql`SELECT id, name, email, password_hash FROM arn.admins WHERE email = ${String(email || '').trim().toLowerCase()}`;
     const ok = admin && (await bcrypt.compare(String(password || ''), admin.password_hash));
     if (!ok) {
       list.push(now);
@@ -25,6 +27,8 @@ export async function POST(req) {
     attempts.delete(ip);
     await sql`UPDATE arn.admins SET last_login = now() WHERE id = ${admin.id}`;
     const token = await createToken({ sub: String(admin.id), pv: passwordVersion(admin.password_hash) });
+    const ua = (req.headers.get('user-agent') || '').slice(0, 160);
+    after(() => sendAdminAlert('login', admin, { 'IP address': ip, Device: ua }));
     const res = NextResponse.json({ ok: true });
     res.cookies.set(SESSION_COOKIE, token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/', maxAge: 60 * 60 * 24 * 7 });
     return res;

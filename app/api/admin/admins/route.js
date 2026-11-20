@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { after } from 'next/server';
+import { sendAdminAlert } from '@/lib/mail';
 import bcrypt from 'bcryptjs';
 import { adminRoute, passwordVersion } from '@/lib/auth';
 import { db } from '@/lib/db';
@@ -13,7 +15,7 @@ export const GET = adminRoute(async (req, ctx, me) => {
   return NextResponse.json({ items: rows, me: me.id });
 });
 
-export const POST = adminRoute(async (req) => {
+export const POST = adminRoute(async (req, ctx, me) => {
   const { name, email, password } = await req.json();
   const em = String(email || '').trim().toLowerCase();
   if (!validEmail(em)) return NextResponse.json({ error: 'Enter a valid email' }, { status: 400 });
@@ -23,6 +25,7 @@ export const POST = adminRoute(async (req) => {
   if (exists) return NextResponse.json({ error: 'An admin with this email already exists' }, { status: 400 });
   const hash = await bcrypt.hash(password, 10);
   await sql`INSERT INTO arn.admins (name, email, password_hash) VALUES (${String(name || 'Admin').slice(0, 80)}, ${em}, ${hash})`;
+  after(() => sendAdminAlert('update', me, { Section: 'Admin Login', Action: 'New admin added', Item: em }));
   return NextResponse.json({ ok: true });
 });
 
@@ -46,6 +49,7 @@ export const PUT = adminRoute(async (req, ctx, me) => {
   if (password && weak(password)) return NextResponse.json({ error: 'Password must be at least 8 characters' }, { status: 400 });
   const hash = password ? await bcrypt.hash(password, 10) : target.password_hash;
   await sql`UPDATE arn.admins SET name = ${String(name ?? target.name).slice(0, 80)}, email = ${em}, password_hash = ${hash} WHERE id = ${targetId}`;
+  after(() => sendAdminAlert('update', me, { Section: 'Admin Login', Action: password ? 'Login details / password changed' : 'Login details changed', Item: em }));
   const res = NextResponse.json({ ok: true });
   if (isSelf && password) {
     // keep current user logged in with a fresh token
@@ -62,5 +66,6 @@ export const DELETE = adminRoute(async (req, ctx, me) => {
   const [{ n }] = await sql`SELECT count(*)::int AS n FROM arn.admins`;
   if (n <= 1) return NextResponse.json({ error: 'At least one admin is required' }, { status: 400 });
   await sql`DELETE FROM arn.admins WHERE id = ${id}`;
+  after(() => sendAdminAlert('update', me, { Section: 'Admin Login', Action: 'Admin removed', 'Admin ID': id }));
   return NextResponse.json({ ok: true });
 });

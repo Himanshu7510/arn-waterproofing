@@ -12,7 +12,7 @@ export default function Footer({ general, branding, layout = {}, socials, servic
             {branding.logo ? (
               <span className="footer-logo-card">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={branding.logo} alt={general.siteName} loading="lazy" />
+                <img src={branding.logo} alt={general.siteName} loading="lazy" height="130" />
               </span>
             ) : (
               <span className="logo-text light">

@@ -15,6 +15,12 @@ async function load(slug) {
   return { ...site, service };
 }
 
+// Pre-build every service page; new services added in the admin panel are built on first visit
+export async function generateStaticParams() {
+  const { items } = await getSite();
+  return items.services.filter((s) => s.slug).map((s) => ({ slug: s.slug }));
+}
+
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const { settings, service } = await load(slug);

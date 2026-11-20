@@ -6,6 +6,9 @@ import Icon from '@/components/Icon';
 import { TrackingHead, TrackingNoscript, CustomCode } from '@/components/site/Tracking';
 import { getSite, siteUrl, absUrl, telHref, waHref } from '@/lib/content';
 
+// Pages are pre-rendered and cached; saving in the admin panel refreshes them instantly.
+export const revalidate = 3600;
+
 const SOCIAL_KEYS = [
   ['facebook', 'Facebook'], ['instagram', 'Instagram'], ['youtube', 'YouTube'], ['twitter', 'X (Twitter)'],
   ['linkedin', 'LinkedIn'], ['pinterest', 'Pinterest'], ['googleBusiness', 'Google Business'],

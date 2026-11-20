@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { after } from 'next/server';
+import { sendAdminAlert } from '@/lib/mail';
 import { adminRoute, refreshSite } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { COLLECTIONS } from '@/lib/schema';
@@ -12,7 +14,7 @@ export const GET = adminRoute(async (req, { params }) => {
   return NextResponse.json({ items: rows.map((r) => ({ id: r.id, published: r.published, ...r.data })) });
 });
 
-export const POST = adminRoute(async (req, { params }) => {
+export const POST = adminRoute(async (req, { params }, admin) => {
   const { collection } = await params;
   const body = await req.json();
   let data;
@@ -23,5 +25,6 @@ export const POST = adminRoute(async (req, { params }) => {
   const [row] = await sql`INSERT INTO arn.items (collection, data, sort_order, published)
     VALUES (${collection}, ${sql.json(data)}, ${max + 1}, ${body.published !== false}) RETURNING id`;
   refreshSite();
+  after(() => sendAdminAlert('update', admin, { Section: COLLECTIONS[collection].label, Action: 'Added', Item: data[COLLECTIONS[collection].titleField] }));
   return NextResponse.json({ ok: true, id: row.id });
 });

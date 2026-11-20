@@ -60,7 +60,7 @@ export default function SettingsForm({ sectionKey }) {
       </div>
       {sectionKey === 'email' && (
         <div className="a-note">
-          <strong>Gmail setup:</strong> turn on 2-Step Verification in your Google account, then create an <em>App Password</em> (Google Account → Security → App passwords). Use host <code>smtp.gmail.com</code>, port <code>465</code>, SSL on, your Gmail address as username and the 16-character app password.
+          <strong>How it works:</strong> with no SMTP password saved, emails go through the free FormSubmit relay. The first time, each address receives an <em>“Activate”</em> email from FormSubmit – click it once (check Spam), then press <em>Send Test Email</em>.<br /><strong>Optional – your own Gmail (best delivery):</strong> turn on 2-Step Verification, create an <em>App Password</em> (Google Account → Security → App passwords), then use host <code>smtp.gmail.com</code>, port <code>465</code>, SSL on, your Gmail as username and the 16-character app password.
         </div>
       )}
       {sectionKey === 'tracking' && (
